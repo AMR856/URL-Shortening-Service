@@ -9,8 +9,8 @@ datasource db {
 
 model urls {
   id          Int       @id @default(autoincrement()) 
-  originalUrl String
-  shortUrl    String    @unique
+  url         String
+  shortCode    String    @unique
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @default(now())
   clicks      Int       @default(0)

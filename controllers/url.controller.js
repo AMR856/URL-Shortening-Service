@@ -4,13 +4,13 @@ const prisma = new PrismaClient();
 
 const getURL = async (req, res) => {
   try {
-    const { shortUrl } = req.params;
+    const { shortCode } = req.params;
 
-    if (!shortUrl || typeof shortUrl !== "string") {
+    if (!shortCode || typeof shortCode !== "string") {
       return res.status(400).json({ msg: "You should provide a URL" });
     }
     const urlRecord = await prisma.urls.findUnique({
-      where: { shortUrl },
+      where: { shortCode },
     });
 
     if (!urlRecord) {
@@ -18,7 +18,7 @@ const getURL = async (req, res) => {
     }
 
     const updatedRecord = await prisma.urls.update({
-      where: { shortUrl },
+      where: { shortCode },
       data: {
         clicks: { increment: 1 },
       },
@@ -26,8 +26,8 @@ const getURL = async (req, res) => {
 
     res.status(200).json({
       id: updatedRecord.id,
-      url: updatedRecord.originalUrl,
-      shortUrl: updatedRecord.shortUrl,
+      url: updatedRecord.url,
+      shortCode: updatedRecord.shortCode,
       createdAt: updatedRecord.createdAt,
       updatedAt: updatedRecord.updatedAt
     });
@@ -40,12 +40,12 @@ const getURL = async (req, res) => {
 
 const deleteURL = async (req, res) => {
   try {
-    const { shortUrl } = req.params;
-    if (!shortUrl || typeof shortUrl !== "string") {
+    const { shortCode } = req.params;
+    if (!shortCode || typeof shortCode !== "string") {
       return res.status(400).json({ msg: "You should provide a URL" });
     }
     const deleted = await prisma.urls.delete({
-      where: { shortUrl },
+      where: { shortCode },
     });
     if (!deleted) {
       return res.status(404).json({ error: "URL not found" });
@@ -58,7 +58,7 @@ const deleteURL = async (req, res) => {
 
 const updateURL = async (req, res) => {
   try {
-    const { shortUrl } = req.params;
+    const { shortCode } = req.params;
     const newUrl = req.body.url;
     if (!newUrl || typeof newUrl !== "string") {
       return res.status(400).json({ msg: "The original URL should be provided" });
@@ -70,19 +70,19 @@ const updateURL = async (req, res) => {
         error: "Invalid new URL format.",
       });
     }
-    if (!shortUrl || typeof shortUrl !== "string") {
+    if (!shortCode || typeof shortCode !== "string") {
       return res.status(400).json({ msg: "You should the current short URL" });
     }
 
     const updated = await prisma.urls.update({
-      where: { shortUrl },
-      data: {originalUrl: newUrl, updatedAt: new Date()}
+      where: { shortCode },
+      data: {url: newUrl, updatedAt: new Date()}
     });
 
     res.status(200).json({
       id: updated.id,
-      url: updated.originalUrl,
-      shortUrl: updated.shortUrl,
+      url: updated.url,
+      shortCode: updated.shortCode,
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt
     });
@@ -97,14 +97,14 @@ const updateURL = async (req, res) => {
 
 const getStats = async (req, res) => {
   try {
-    const { shortUrl } = req.params;
+    const { shortCode } = req.params;
 
-    if (!shortUrl || typeof shortUrl !== "string") {
+    if (!shortCode || typeof shortCode !== "string") {
       return res.status(400).json({ msg: "You should provide a URL" });
     }
 
     const urlRecord = await prisma.urls.findUnique({
-      where: { shortUrl },
+      where: { shortCode },
     });
 
     if (!urlRecord) {
@@ -113,8 +113,8 @@ const getStats = async (req, res) => {
 
     res.status(200).json({
       id: urlRecord.id,
-      url: urlRecord.originalUrl,
-      shortUrl: urlRecord.shortUrl,
+      url: urlRecord.url,
+      shortCode: urlRecord.shortCode,
       createdAt: urlRecord.createdAt,
       updatedAt: urlRecord.updatedAt,
       clicks: urlRecord.clicks
@@ -141,19 +141,19 @@ const uploadURL = async (req, res) => {
       });
     }
 
-    const shortUrl = generateShortCode();
+    const shortCode = generateShortCode();
     const newUrl = await prisma.urls.create({
       data: {
-        originalUrl: url,
-        shortUrl,
+        url,
+        shortCode,
       },
     });
     
     console.log("New URL inserted:", newUrl);
     res.status(201).json({
       id: newUrl.id,
-      url: newUrl.originalUrl,
-      shortUrl: newUrl.shortUrl,
+      url: newUrl.url,
+      shortCode: newUrl.shortCode,
       createdAt: newUrl.createdAt,
       updatedAt: newUrl.updatedAt,
     });

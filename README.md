@@ -98,7 +98,7 @@ Create a new short URL.
 ```json
 {
   "id": 1,
-  "originalUrl": "https://www.example.com/long/url/path",
+  "url": "https://www.example.com/long/url/path",
   "shortUrl": "abc123",
   "createdAt": "2025-10-07T14:00:00.000Z",
   "updatedAt": "2025-10-07T14:00:00.000Z"
@@ -121,7 +121,7 @@ Fetch and increment access count for a given short URL.
 ```json
 {
   "id": 1,
-  "originalUrl": "https://www.example.com/long/url/path",
+  "url": "https://www.example.com/long/url/path",
   "shortUrl": "abc123",
   "createdAt": "2025-10-07T14:00:00.000Z",
   "updatedAt": "2025-10-07T14:00:00.000Z"
@@ -152,7 +152,7 @@ Update the original URL.
 ```json
 {
   "id": 1,
-  "originalUrl": "https://www.newsite.com/new/path",
+  "url": "https://www.newsite.com/new/path",
   "shortUrl": "abc123",
   "createdAt": "2025-10-07T14:00:00.000Z",
   "updatedAt": "2025-10-07T16:32:33.048Z"
@@ -189,24 +189,13 @@ Retrieve analytics about a specific short URL.
 ```json
 {
   "id": 1,
-  "originalUrl": "https://www.example.com/long/url/path",
+  "url": "https://www.example.com/long/url/path",
   "shortUrl": "abc123",
   "clicks": 5,
   "createdAt": "2025-10-07T14:00:00.000Z",
   "updatedAt": "2025-10-07T16:32:33.048Z"
 }
 ```
-
----
-
-## 🧠 Utility Functions
-
-**`generateShortCode()`**
-Generates a 6-character alphanumeric string for short URLs.
-Example: `"aB12Cd"`
-
----
-
 ## 🧑‍💻 Development
 
 Run in development mode:
@@ -228,12 +217,10 @@ npx prettier --write .
 ```prisma
 model urls {
   id          Int       @id @default(autoincrement())
-  originalUrl String
+  url         String
   shortUrl    String    @unique
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   clicks      Int       @default(0)
   expiresAt   DateTime?
 }
-
-

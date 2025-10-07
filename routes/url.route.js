@@ -9,13 +9,13 @@ const {
   uploadURL,
 } = require("../controllers/url.controller");
 
-router.get("/:shortUrl", getURL);
+router.get("/:shortCode", getURL);
 
-router.delete("/:shortUrl", deleteURL);
+router.delete("/:shortCode", deleteURL);
 
-router.put("/:shortUrl", updateURL);
+router.put("/:shortCode", updateURL);
 
-router.get("/:shortUrl/stats", getStats);
+router.get("/:shortCode/stats", getStats);
 
 router.post("/", uploadURL);
 
