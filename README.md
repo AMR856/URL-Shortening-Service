@@ -46,6 +46,8 @@ project/
 │   └── users.controller.js
 ├── utils/
 │   └── utils.js
+|── config/
+│   └── swagger.js
 ├── index.js
 └── package.json
 ```
