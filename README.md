@@ -360,3 +360,5 @@ npx prisma studio
 * Access tokens expire every **5 minutes**.
 * Refresh tokens last **1 day** and are stored securely in your database.
 * Always send your **Bearer Token** in the `Authorization` header.
+
+Solution for URL Shortening Service Project **https://roadmap.sh/projects/url-shortening-service**
