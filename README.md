@@ -1,66 +1,73 @@
 # 🔗 URL Shortener API
 
-A simple URL Shortening service built with **Node.js**, **Express**, and **Prisma ORM**.  
-It allows users to shorten long URLs, update or delete them, track access statistics, and more.
+A secure URL Shortening service built with **Node.js**, **Express**, and **Prisma ORM**, featuring **JWT authentication**, **refresh tokens**, and **Swagger API documentation**.
 
 ---
 
 ## 🚀 Features
 
-- Shorten long URLs into unique short codes.
-- Redirect or fetch original URLs using the short code.
-- Update or delete existing URLs.
-- Track number of times each short URL is accessed.
-- Validate URLs before storing.
-- Automatically records creation and update timestamps.
+* ✅ User registration and login with hashed passwords (bcrypt)
+* 🔐 JWT-based authentication (access & refresh tokens)
+* ✂️ Shorten long URLs into unique short codes
+* 🔄 Update or delete existing URLs
+* 📊 Track number of clicks per short URL
+* 🧾 View detailed statistics for each URL
+* 🕒 Automatic timestamps for creation & updates
+* 📘 Swagger documentation for all endpoints
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Node.js** – JavaScript runtime  
-- **Express.js** – Web framework  
-- **Prisma ORM** – Database ORM  
-- **SQLite / PostgreSQL / MySQL** – Supported databases  
-- **Nodemon** – Auto-reload during development
+* **Node.js** – JavaScript runtime
+* **Express.js** – Web framework
+* **Prisma ORM** – Database ORM
+* **SQLite / PostgreSQL / MySQL** – Supported databases
+* **jsonwebtoken** – For JWT authentication
+* **bcryptjs** – Secure password hashing
+* **swagger-ui-express** – API documentation
+* **Nodemon** – Development auto-reload
 
 ---
 
 ## 📂 Project Structure
 
 ```
-
 project/
 ├── prisma/
 │   └── schema.prisma
 ├── routes/
-│   └── url.route.js
+│   ├── url.route.js
+│   └── users.route.js
+├── middlewares/
+│   └── auth.js
+├── controllers/
+│   ├── url.controller.js
+│   └── users.controller.js
 ├── utils/
 │   └── utils.js
-├── controllers/
-│   └── url.controller.js
-├── server.js
+├── index.js
 └── package.json
-
-````
+```
 
 ---
 
 ## ⚙️ Installation
 
-### 1. Clone the repository
+### 1️⃣ Clone the repository
+
 ```bash
 git clone https://github.com/yourusername/url-shortener.git
 cd url-shortener
-````
+```
 
-### 2. Install dependencies
+### 2️⃣ Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Set up Prisma
+### 3️⃣ Set up Prisma
 
 Edit your `prisma/schema.prisma` file to use your preferred database, then run:
 
@@ -68,18 +75,126 @@ Edit your `prisma/schema.prisma` file to use your preferred database, then run:
 npx prisma migrate dev --name init
 ```
 
-### 4. Start the server
+### 4️⃣ Environment Variables
+
+Create a `.env` file in the root directory:
+
+```bash
+DATABASE_URL="file:./dev.db"
+ACCESS_TOKEN_SECRET="your_access_secret_here"
+REFRESH_TOKEN_SECRET="your_refresh_secret_here"
+PORT=5000
+```
+
+### 5️⃣ Start the server
 
 ```bash
 npx nodemon server.js
 ```
 
-Server will start on:
+Server will start at:
 👉 **[http://localhost:5000](http://localhost:5000)**
 
 ---
 
-## 📘 API Endpoints
+## 🔐 Authentication Routes
+
+### **1️⃣ POST /auth/register**
+
+Register a new user.
+
+**Request:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+**Response (201):**
+
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "createdAt": "2025-10-08T12:30:00.000Z"
+}
+```
+
+**Errors:**
+
+* `400` – Invalid email or password
+* `500` – Internal server error
+
+---
+
+### **2️⃣ POST /auth/login**
+
+Login and receive JWT tokens.
+
+**Request:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+**Response (200):**
+
+```json
+{
+  "message": "Login successful",
+  "accessToken": "your-access-token",
+  "refreshToken": "your-refresh-token"
+}
+```
+
+**Errors:**
+
+* `401` – Invalid credentials
+* `500` – Internal server error
+
+---
+
+### **3️⃣ POST /auth/refresh**
+
+Generate a new access token using a valid refresh token.
+
+**Request:**
+
+```json
+{
+  "token": "your-refresh-token"
+}
+```
+
+**Response (200):**
+
+```json
+{
+  "accessToken": "new-access-token"
+}
+```
+
+**Errors:**
+
+* `401` – Missing token
+* `403` – Invalid or expired token
+
+---
+
+## 🔗 URL Routes (Protected by Bearer Token)
+
+All `/shorten/*` routes require an **Authorization header**:
+
+```
+Authorization: Bearer <accessToken>
+```
+
+---
 
 ### **1️⃣ POST /shorten**
 
@@ -89,7 +204,7 @@ Create a new short URL.
 
 ```json
 {
-  "url": "https://www.example.com/long/url/path"
+  "url": "https://example.com"
 }
 ```
 
@@ -98,52 +213,38 @@ Create a new short URL.
 ```json
 {
   "id": 1,
-  "url": "https://www.example.com/long/url/path",
-  "shortUrl": "abc123",
-  "createdAt": "2025-10-07T14:00:00.000Z",
-  "updatedAt": "2025-10-07T14:00:00.000Z"
+  "url": "https://example.com",
+  "shortCode": "abc123",
 }
 ```
 
-**Errors:**
-
-* `400` – Invalid or missing URL
-* `500` – Internal server error
-
 ---
 
-### **2️⃣ GET /shorten/:shortUrl**
+### **2️⃣ GET /shorten/:shortCode**
 
-Fetch and increment access count for a given short URL.
+Fetch the original URL and increment its click count.
 
 **Response (200):**
 
 ```json
 {
   "id": 1,
-  "url": "https://www.example.com/long/url/path",
-  "shortUrl": "abc123",
-  "createdAt": "2025-10-07T14:00:00.000Z",
-  "updatedAt": "2025-10-07T14:00:00.000Z"
+  "url": "https://example.com",
+  "shortCode": "abc123",
 }
 ```
 
-**Errors:**
-
-* `400` – Invalid or missing short code
-* `404` – URL not found
-
 ---
 
-### **3️⃣ PUT /shorten/:shortUrl**
+### **3️⃣ PUT /shorten/:shortCode**
 
-Update the original URL.
+Update an existing short URL.
 
 **Request:**
 
 ```json
 {
-  "url": "https://www.newsite.com/new/path"
+  "url": "https://newsite.com"
 }
 ```
 
@@ -152,53 +253,87 @@ Update the original URL.
 ```json
 {
   "id": 1,
-  "url": "https://www.newsite.com/new/path",
-  "shortUrl": "abc123",
-  "createdAt": "2025-10-07T14:00:00.000Z",
-  "updatedAt": "2025-10-07T16:32:33.048Z"
+  "url": "https://newsite.com",
+  "shortCode": "abc123",
 }
 ```
 
 ---
 
-### **4️⃣ DELETE /shorten/:shortUrl**
+### **4️⃣ DELETE /shorten/:shortCode**
 
-Delete a short URL by its short code.
+Delete a URL by its short code.
 
-**Response (204):**
+**Response (204)**
 
-```json
-{
-  "msg": "URL was deleted successfully"
-}
-```
 
-**Errors:**
+### **5️⃣ GET /shorten/:shortCode/stats**
 
-* `400` – Invalid or missing short code
-* `404` – URL not found
-
----
-
-### **5️⃣ GET /shorten/:shortUrl/stats**
-
-Retrieve analytics about a specific short URL.
+Retrieve analytics (clicks, creation date, etc.) for a URL.
 
 **Response (200):**
 
 ```json
 {
   "id": 1,
-  "url": "https://www.example.com/long/url/path",
-  "shortUrl": "abc123",
-  "clicks": 5,
+  "url": "https://example.com",
+  "shortCode": "abc123",
+  "clicks": 10,
   "createdAt": "2025-10-07T14:00:00.000Z",
-  "updatedAt": "2025-10-07T16:32:33.048Z"
+  "updatedAt": "2025-10-07T15:00:00.000Z"
 }
 ```
+
+---
+
+## 📘 API Documentation (Swagger)
+
+After starting the server, access your live Swagger docs at:
+
+👉 **[http://localhost:5000/docs](http://localhost:5000/docs)**
+
+You can:
+
+* Test all endpoints interactively
+* Use the **Authorize 🔒** button to add your Bearer Token
+* View all request/response schemas
+
+---
+
+## 🧾 Prisma Database Schema
+
+```prisma
+model urls {
+  id          Int       @id @default(autoincrement()) 
+  url         String
+  shortCode    String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  clicks      Int       @default(0)
+  expiresAt   DateTime?
+}
+
+model users {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  password      String
+  tokens        refresh_tokens[]
+}
+
+model refresh_tokens {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  createdAt DateTime  @default(now())
+  user      users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+```
+
+---
+
 ## 🧑‍💻 Development
 
-Run in development mode:
+Run the project in development mode:
 
 ```bash
 npx nodemon server.js
@@ -210,17 +345,16 @@ Format your code using Prettier:
 npx prettier --write .
 ```
 
+Run Prisma Studio (GUI for your DB):
+
+```bash
+npx prisma studio
+```
+
 ---
 
-## 🧾 Example Database Schema (Prisma)
+## 🧠 Notes
 
-```prisma
-model urls {
-  id          Int       @id @default(autoincrement())
-  url         String
-  shortUrl    String    @unique
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  clicks      Int       @default(0)
-  expiresAt   DateTime?
-}
+* Access tokens expire every **5 minutes**.
+* Refresh tokens last **1 day** and are stored securely in your database.
+* Always send your **Bearer Token** in the `Authorization` header.

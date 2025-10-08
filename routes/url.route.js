@@ -50,17 +50,6 @@ const {
  *                 shortCode:
  *                   type: string
  *                   example: "abc123"
- *                 createdAt:
- *                   type: string
- *                   format: date-time
- *                   example: "2025-10-08T12:00:00Z"
- *                 updatedAt:
- *                   type: string
- *                   format: date-time
- *                   example: "2025-10-08T14:22:00Z"
- *                 clicks:
- *                   type: integer
- *                   example: 17
  *       400:
  *         description: Invalid or missing short code.
  *       404:
@@ -145,12 +134,6 @@ router.delete("/:shortCode", deleteURL);
  *                 shortCode:
  *                   type: string
  *                   example: "abc123"
- *                 createdAt:
- *                   type: string
- *                   example: "2025-10-08T12:00:00Z"
- *                 updatedAt:
- *                   type: string
- *                   example: "2025-10-08T13:00:00Z"
  *       400:
  *         description: Invalid input data.
  *       404:
@@ -252,14 +235,6 @@ router.get("/:shortCode/stats", getStats);
  *                 shortCode:
  *                   type: string
  *                   example: "abc123"
- *                 createdAt:
- *                   type: string
- *                   format: date-time
- *                   example: "2025-10-08T14:00:00Z"
- *                 updatedAt:
- *                   type: string
- *                   format: date-time
- *                   example: "2025-10-08T14:00:00Z"
  *       400:
  *         description: Invalid input data.
  *       500:

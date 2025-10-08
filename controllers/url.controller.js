@@ -29,9 +29,6 @@ const getURL = async (req, res) => {
       id: updatedRecord.id,
       url: updatedRecord.url,
       shortCode: updatedRecord.shortCode,
-      createdAt: updatedRecord.createdAt,
-      updatedAt: updatedRecord.updatedAt,
-      clicks: updatedRecord.clicks,
     });
   } catch (error) {
     console.error(error);
@@ -47,7 +44,6 @@ const deleteURL = async (req, res) => {
       return res.status(400).json({ msg: "You should provide a short code" });
     }
 
-    // Try to find the URL first
     const url = await prisma.urls.findUnique({
       where: { shortCode },
     });
@@ -98,8 +94,6 @@ const updateURL = async (req, res) => {
       id: updated.id,
       url: updated.url,
       shortCode: updated.shortCode,
-      createdAt: updated.createdAt,
-      updatedAt: updated.updatedAt,
     });
   } catch (error) {
     if (error.code === "P2025")
@@ -166,8 +160,6 @@ const uploadURL = async (req, res) => {
       id: newUrl.id,
       url: newUrl.url,
       shortCode: newUrl.shortCode,
-      createdAt: newUrl.createdAt,
-      updatedAt: newUrl.updatedAt,
     });
   } catch (error) {
     console.log(error);
