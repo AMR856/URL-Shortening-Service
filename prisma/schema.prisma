@@ -16,3 +16,18 @@ model urls {
   clicks      Int       @default(0)
   expiresAt   DateTime?
 }
+
+model users {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  password      String
+  tokens        refresh_tokens[]
+}
+
+model refresh_tokens {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  createdAt DateTime  @default(now())
+  user      users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

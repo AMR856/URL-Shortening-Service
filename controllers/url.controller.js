@@ -7,14 +7,15 @@ const getURL = async (req, res) => {
     const { shortCode } = req.params;
 
     if (!shortCode || typeof shortCode !== "string") {
-      return res.status(400).json({ msg: "You should provide a URL" });
+      return res.status(400).json({ message: "You must provide a short code." });
     }
+
     const urlRecord = await prisma.urls.findUnique({
       where: { shortCode },
     });
 
     if (!urlRecord) {
-      return res.status(404).json({ msg: "URL wasn't found" });
+      return res.status(404).json({ message: "Short URL not found." });
     }
 
     const updatedRecord = await prisma.urls.update({
@@ -29,11 +30,11 @@ const getURL = async (req, res) => {
       url: updatedRecord.url,
       shortCode: updatedRecord.shortCode,
       createdAt: updatedRecord.createdAt,
-      updatedAt: updatedRecord.updatedAt
+      updatedAt: updatedRecord.updatedAt,
+      clicks: updatedRecord.clicks,
     });
-
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -41,17 +42,27 @@ const getURL = async (req, res) => {
 const deleteURL = async (req, res) => {
   try {
     const { shortCode } = req.params;
+
     if (!shortCode || typeof shortCode !== "string") {
-      return res.status(400).json({ msg: "You should provide a URL" });
+      return res.status(400).json({ msg: "You should provide a short code" });
     }
-    const deleted = await prisma.urls.delete({
+
+    // Try to find the URL first
+    const url = await prisma.urls.findUnique({
       where: { shortCode },
     });
-    if (!deleted) {
+
+    if (!url) {
       return res.status(404).json({ error: "URL not found" });
     }
-    res.status(204).json({ msg: "URL was deleted successfully" });
+
+    await prisma.urls.delete({
+      where: { shortCode },
+    });
+
+    res.status(204).send();
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -61,7 +72,9 @@ const updateURL = async (req, res) => {
     const { shortCode } = req.params;
     const newUrl = req.body.url;
     if (!newUrl || typeof newUrl !== "string") {
-      return res.status(400).json({ msg: "The original URL should be provided" });
+      return res
+        .status(400)
+        .json({ message: "The original URL should be provided" });
     }
     try {
       new URL(newUrl);
@@ -71,12 +84,14 @@ const updateURL = async (req, res) => {
       });
     }
     if (!shortCode || typeof shortCode !== "string") {
-      return res.status(400).json({ msg: "You should the current short URL" });
+      return res
+        .status(400)
+        .json({ message: "You should the current short URL" });
     }
 
     const updated = await prisma.urls.update({
       where: { shortCode },
-      data: {url: newUrl, updatedAt: new Date()}
+      data: { url: newUrl, updatedAt: new Date() },
     });
 
     res.status(200).json({
@@ -84,9 +99,8 @@ const updateURL = async (req, res) => {
       url: updated.url,
       shortCode: updated.shortCode,
       createdAt: updated.createdAt,
-      updatedAt: updated.updatedAt
+      updatedAt: updated.updatedAt,
     });
-
   } catch (error) {
     if (error.code === "P2025")
       return res.status(404).json({ error: "short URL wasn't found" });
@@ -100,7 +114,7 @@ const getStats = async (req, res) => {
     const { shortCode } = req.params;
 
     if (!shortCode || typeof shortCode !== "string") {
-      return res.status(400).json({ msg: "You should provide a URL" });
+      return res.status(400).json({ message: "You should provide a URL" });
     }
 
     const urlRecord = await prisma.urls.findUnique({
@@ -108,7 +122,7 @@ const getStats = async (req, res) => {
     });
 
     if (!urlRecord) {
-      return res.status(404).json({ msg: "URL wasn't found" });
+      return res.status(404).json({ message: "URL wasn't found" });
     }
 
     res.status(200).json({
@@ -117,9 +131,8 @@ const getStats = async (req, res) => {
       shortCode: urlRecord.shortCode,
       createdAt: urlRecord.createdAt,
       updatedAt: urlRecord.updatedAt,
-      clicks: urlRecord.clicks
+      clicks: urlRecord.clicks,
     });
-
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
@@ -130,7 +143,7 @@ const uploadURL = async (req, res) => {
   try {
     const url = req.body.url;
     if (!url || typeof url !== "string") {
-      return res.status(400).json({ msg: "You should provide a URL" });
+      return res.status(400).json({ message: "You should provide a URL" });
     }
 
     try {
@@ -148,8 +161,7 @@ const uploadURL = async (req, res) => {
         shortCode,
       },
     });
-    
-    console.log("New URL inserted:", newUrl);
+
     res.status(201).json({
       id: newUrl.id,
       url: newUrl.url,
