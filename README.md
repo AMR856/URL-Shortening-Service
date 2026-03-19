@@ -1,27 +1,27 @@
-# 🔗 URL Shortener API - NestJS Edition
+# 🔗 URL Shortener API
 
 A secure URL Shortening service built with **NestJS**, **TypeScript**, and **Prisma ORM**, featuring **JWT authentication**, **refresh tokens**, and **Swagger API documentation**. Fully refactored with service layers, DTOs, and enterprise-ready architecture.
 
 ---
 
-## 🚀 Features
+## Features
 
-* ✅ User registration and login with hashed passwords (bcrypt)
-* 🔐 JWT-based authentication (access & refresh tokens)
-* ✂️ Shorten long URLs into unique short codes
-* 🔄 Update or delete existing URLs
-* 📊 Track number of clicks per short URL
-* 🧾 View detailed statistics for each URL
-* 🕒 Automatic timestamps for creation & updates
-* 📘 Interactive Swagger documentation for all endpoints
-* 🏗️ Enterprise-ready architecture with services, controllers, DTOs, and guards
-* 📝 Full TypeScript support
-* ✨ Input validation with class-validator
-* 🎯 Dependency injection pattern
+* User registration and login with hashed passwords (bcrypt)
+* JWT-based authentication (access & refresh tokens)
+* Shorten long URLs into unique short codes
+* Update or delete existing URLs
+* Track number of clicks per short URL
+* View detailed statistics for each URL
+* Automatic timestamps for creation & updates
+* nteractive Swagger documentation for all endpoints
+* Enterprise-ready architecture with services, controllers, DTOs, and guards
+* Full TypeScript support
+* Input validation with class-validator
+* Dependency injection pattern
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **NestJS** – Progressive Node.js framework
 * **TypeScript** – Type-safe JavaScript
@@ -36,7 +36,7 @@ A secure URL Shortening service built with **NestJS**, **TypeScript**, and **Pri
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 src/
@@ -86,7 +86,7 @@ prisma/
 
 ---
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 ### 1️⃣ Clone the repository
 
@@ -140,14 +140,14 @@ npm run start:dev
 ```
 
 Server will start at:
-👉 **[http://localhost:3000](http://localhost:3000)**
+**[http://localhost:3000](http://localhost:3000)**
 
 Swagger docs available at:
-👉 **[http://localhost:3000/docs](http://localhost:3000/docs)**
+**[http://localhost:3000/docs](http://localhost:3000/docs)**
 
 ---
 
-## 📦 Available Scripts
+## Available Scripts
 
 ```bash
 npm run build          # Build the application for production
@@ -164,7 +164,7 @@ npm run test:e2e       # Run end-to-end tests
 
 ---
 
-## 🔐 Authentication Routes
+## Authentication Routes
 
 ### **1️⃣ POST /auth/register**
 
@@ -262,9 +262,9 @@ Refresh access token using a valid refresh token.
 
 ---
 
-## ✂️ URL Shortening Routes
+## URL Shortening Routes
 
-> **⚠️ Protected Routes:** The following routes require authentication. Include JWT token in the Authorization header:
+> **Protected Routes:** The following routes require authentication. Include JWT token in the Authorization header:
 > ```
 > Authorization: Bearer your_access_token
 > ```
@@ -401,7 +401,7 @@ Successfully deleted (no content)
 
 ---
 
-## 🏗️ Architecture Highlights
+## Architecture Highlights
 
 ### **Service Layer**
 
@@ -442,64 +442,6 @@ Consistent error responses with proper HTTP status codes
 
 ---
 
-## 🚀 Deployment
-
-### Production Build
-
-```bash
-npm run build
-npm run start:prod
-```
-
-### Docker
-
-Create a `Dockerfile`:
-
-```dockerfile
-FROM node:20-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install --only=production
-
-COPY dist ./dist
-COPY prisma ./prisma
-
-EXPOSE 3000
-
-CMD ["node", "dist/main.js"]
-```
-
-Build and run:
-
-```bash
-docker build -t url-shortener .
-docker run -p 3000:3000 --env-file .env url-shortener
-```
-
----
-
-## 📝 License
-
-ISC
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
----
-
-## 📧 Support
-
-For issues or questions, please open a GitHub issue or contact the development team.
-  "refreshToken": "your-refresh-token"
-}
-```
-
 **Errors:**
 
 * `401` – Invalid credentials
@@ -534,7 +476,7 @@ Generate a new access token using a valid refresh token.
 
 ---
 
-## 🔗 URL Routes (Protected by Bearer Token)
+## URL Routes (Protected by Bearer Token)
 
 All `/shorten/*` routes require an **Authorization header**:
 
@@ -679,7 +621,7 @@ model refresh_tokens {
 
 ---
 
-## 🧑‍💻 Development
+## Development
 
 Run the project in development mode:
 
@@ -706,3 +648,5 @@ npx prisma studio
 * Access tokens expire every **5 minutes**.
 * Refresh tokens last **1 day** and are stored securely in your database.
 * Always send your **Bearer Token** in the `Authorization` header.
+
+Solution for URL Shortening Service Project **https://roadmap.sh/projects/url-shortening-service**
