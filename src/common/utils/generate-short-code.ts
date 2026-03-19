@@ -1,14 +1,10 @@
-const generateShortCode = () => {
+export function generateShortCode(): string {
   const codeLength = 6;
   const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let code = "";
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let code = '';
   for (let i = 0; i < codeLength; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
-};
-
-module.exports = {
-  generateShortCode,
-};
+}

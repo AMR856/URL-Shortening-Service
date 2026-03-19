@@ -1,6 +1,6 @@
-# 🔗 URL Shortener API
+# 🔗 URL Shortener API - NestJS Edition
 
-A secure URL Shortening service built with **Node.js**, **Express**, and **Prisma ORM**, featuring **JWT authentication**, **refresh tokens**, and **Swagger API documentation**.
+A secure URL Shortening service built with **NestJS**, **TypeScript**, and **Prisma ORM**, featuring **JWT authentication**, **refresh tokens**, and **Swagger API documentation**. Fully refactored with service layers, DTOs, and enterprise-ready architecture.
 
 ---
 
@@ -13,51 +13,85 @@ A secure URL Shortening service built with **Node.js**, **Express**, and **Prism
 * 📊 Track number of clicks per short URL
 * 🧾 View detailed statistics for each URL
 * 🕒 Automatic timestamps for creation & updates
-* 📘 Swagger documentation for all endpoints
+* 📘 Interactive Swagger documentation for all endpoints
+* 🏗️ Enterprise-ready architecture with services, controllers, DTOs, and guards
+* 📝 Full TypeScript support
+* ✨ Input validation with class-validator
+* 🎯 Dependency injection pattern
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Node.js** – JavaScript runtime
-* **Express.js** – Web framework
-* **Prisma ORM** – Database ORM
-* **SQLite / PostgreSQL / MySQL** – Supported databases
-* **jsonwebtoken** – For JWT authentication
-* **bcryptjs** – Secure password hashing
-* **swagger-ui-express** – API documentation
-* **Nodemon** – Development auto-reload
+* **NestJS** – Progressive Node.js framework
+* **TypeScript** – Type-safe JavaScript
+* **Prisma ORM** – Modern database ORM
+* **PostgreSQL / MySQL / SQLite** – Supported databases
+* **JWT (jsonwebtoken)** – Secure authentication
+* **Passport.js** – Authentication middleware
+* **bcrypt** – Secure password hashing
+* **Swagger/OpenAPI** – API documentation
+* **class-validator** – Data validation
+* **class-transformer** – Data transformation
 
 ---
 
 ## 📂 Project Structure
 
 ```
-project/
-├── prisma/
-│   └── schema.prisma
-├── routes/
-│   ├── url.route.js
-│   └── users.route.js
-├── middlewares/
-│   └── auth.js
-├── controllers/
-│   ├── url.controller.js
-│   └── users.controller.js
-├── utils/
-│   └── utils.js
-├── index.js
-└── package.json
+src/
+├── main.ts                          # Application entry point
+├── app.module.ts                    # Root module
+├── app.controller.ts                # Health check controller
+├── app.service.ts                   # App service
+├── auth/                            # Authentication module
+│   ├── auth.module.ts              
+│   ├── controllers/
+│   │   └── auth.controller.ts
+│   ├── services/
+│   │   └── auth.service.ts
+│   ├── strategies/
+│   │   └── jwt.strategy.ts
+│   ├── guards/
+│   │   └── jwt-auth.guard.ts
+│   └── dto/
+│       ├── register.dto.ts
+│       ├── login.dto.ts
+│       ├── refresh-token.dto.ts
+│       └── auth-response.dto.ts
+├── url/                             # URL shortening module
+│   ├── url.module.ts
+│   ├── controllers/
+│   │   └── url.controller.ts
+│   ├── services/
+│   │   └── url.service.ts
+│   ├── entities/
+│   │   └── url.entity.ts
+│   └── dto/
+│       ├── create-url.dto.ts
+│       ├── update-url.dto.ts
+│       └── url-response.dto.ts
+├── prisma/                          # Prisma database integration
+│   ├── prisma.module.ts
+│   └── prisma.service.ts
+├── config/                          # Configuration files
+│   └── jwt.config.ts
+└── common/                          # Common utilities
+    └── utils/
+        └── generate-short-code.ts
+prisma/
+├── schema.prisma                    # Database schema
+└── migrations/                      # Migration files
 ```
 
 ---
 
-## ⚙️ Installation
+## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/url-shortener.git
+git clone <repository-url>
 cd url-shortener
 ```
 
@@ -67,33 +101,66 @@ cd url-shortener
 npm install
 ```
 
-### 3️⃣ Set up Prisma
+### 3️⃣ Set up environment variables
 
-Edit your `prisma/schema.prisma` file to use your preferred database, then run:
+Copy `.env.example` to `.env` and configure:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env`:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/url_shortener"
+ACCESS_TOKEN_SECRET="your_secure_secret_key_here"
+REFRESH_TOKEN_SECRET="your_refresh_secret_key_here"
+PORT=3000
+NODE_ENV=development
+```
+
+### 4️⃣ Set up Prisma
+
+Generate Prisma client and run migrations:
 
 ```bash
 npx prisma migrate dev --name init
 ```
 
-### 4️⃣ Environment Variables
-
-Create a `.env` file in the root directory:
+Or push the schema to database:
 
 ```bash
-DATABASE_URL="file:./dev.db"
-ACCESS_TOKEN_SECRET="your_access_secret_here"
-REFRESH_TOKEN_SECRET="your_refresh_secret_here"
-PORT=5000
+npx prisma db push
 ```
 
-### 5️⃣ Start the server
+### 5️⃣ Start the development server
 
 ```bash
-npx nodemon server.js
+npm run start:dev
 ```
 
 Server will start at:
-👉 **[http://localhost:5000](http://localhost:5000)**
+👉 **[http://localhost:3000](http://localhost:3000)**
+
+Swagger docs available at:
+👉 **[http://localhost:3000/docs](http://localhost:3000/docs)**
+
+---
+
+## 📦 Available Scripts
+
+```bash
+npm run build          # Build the application for production
+npm run start          # Start the application
+npm run start:dev      # Start the application in watch mode
+npm run start:prod     # Build and run production build
+npm run lint           # Run ESLint
+npm run format         # Format code with Prettier
+npm run test           # Run unit tests
+npm run test:watch     # Run tests in watch mode
+npm run test:cov       # Run tests with coverage
+npm run test:e2e       # Run end-to-end tests
+```
 
 ---
 
@@ -101,7 +168,7 @@ Server will start at:
 
 ### **1️⃣ POST /auth/register**
 
-Register a new user.
+Register a new user account.
 
 **Request:**
 
@@ -116,22 +183,25 @@ Register a new user.
 
 ```json
 {
-  "id": 1,
-  "email": "user@example.com",
-  "createdAt": "2025-10-08T12:30:00.000Z"
+  "message": "User registered successfully.",
+  "user": {
+    "id": 1,
+    "email": "user@example.com"
+  }
 }
 ```
 
 **Errors:**
 
-* `400` – Invalid email or password
+* `400` – Validation failed or invalid input
+* `409` – Email already registered
 * `500` – Internal server error
 
 ---
 
 ### **2️⃣ POST /auth/login**
 
-Login and receive JWT tokens.
+Login and receive JWT access and refresh tokens.
 
 **Request:**
 
@@ -147,7 +217,285 @@ Login and receive JWT tokens.
 ```json
 {
   "message": "Login successful",
-  "accessToken": "your-access-token",
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "email": "user@example.com"
+  }
+}
+```
+
+**Errors:**
+
+* `400` – Validation failed or invalid input
+* `401` – Invalid credentials
+* `500` – Internal server error
+
+---
+
+### **3️⃣ POST /auth/refresh**
+
+Refresh access token using a valid refresh token.
+
+**Request:**
+
+```json
+{
+  "token": "your-refresh-token"
+}
+```
+
+**Response (200):**
+
+```json
+{
+  "accessToken": "new-access-token"
+}
+```
+
+**Errors:**
+
+* `400` – Token is required
+* `401` – Invalid or expired refresh token
+* `500` – Internal server error
+
+---
+
+## ✂️ URL Shortening Routes
+
+> **⚠️ Protected Routes:** The following routes require authentication. Include JWT token in the Authorization header:
+> ```
+> Authorization: Bearer your_access_token
+> ```
+
+### **1️⃣ POST /shorten**
+
+Create a new shortened URL.
+
+**Request:**
+
+```json
+{
+  "url": "https://example.com/very/long/url/that/needs/shortening"
+}
+```
+
+**Response (201):**
+
+```json
+{
+  "id": 1,
+  "url": "https://example.com/very/long/url/that/needs/shortening",
+  "shortCode": "abc123",
+  "clicks": 0,
+  "createdAt": "2025-03-19T10:30:00Z",
+  "updatedAt": "2025-03-19T10:30:00Z"
+}
+```
+
+**Errors:**
+
+* `400` – Invalid URL format
+* `401` – Unauthorized (missing or invalid token)
+* `500` – Internal server error
+
+---
+
+### **2️⃣ GET /shorten/:shortCode**
+
+Retrieve original URL and increment click count.
+
+**Response (200):**
+
+```json
+{
+  "id": 1,
+  "url": "https://example.com/very/long/url/that/needs/shortening",
+  "shortCode": "abc123",
+  "clicks": 5
+}
+```
+
+**Errors:**
+
+* `400` – Invalid short code
+* `404` – Short URL not found
+* `500` – Internal server error
+
+---
+
+### **3️⃣ GET /shorten/:shortCode/stats**
+
+Get detailed statistics for a shortened URL.
+
+**Response (200):**
+
+```json
+{
+  "id": 1,
+  "url": "https://example.com/very/long/url/that/needs/shortening",
+  "shortCode": "abc123",
+  "clicks": 42,
+  "createdAt": "2025-03-19T10:30:00Z",
+  "updatedAt": "2025-03-19T10:30:00Z",
+  "expiresAt": null
+}
+```
+
+**Errors:**
+
+* `400` – Invalid short code
+* `404` – Short URL not found
+* `500` – Internal server error
+
+---
+
+### **4️⃣ PUT /shorten/:shortCode**
+
+Update the original URL of a shortened link.
+
+**Request:**
+
+```json
+{
+  "url": "https://newexample.com/new/long/url"
+}
+```
+
+**Response (200):**
+
+```json
+{
+  "id": 1,
+  "url": "https://newexample.com/new/long/url",
+  "shortCode": "abc123",
+  "clicks": 42,
+  "updatedAt": "2025-03-19T11:00:00Z"
+}
+```
+
+**Errors:**
+
+* `400` – Invalid URL format or bad request
+* `401` – Unauthorized
+* `404` – Short URL not found
+* `500` – Internal server error
+
+---
+
+### **5️⃣ DELETE /shorten/:shortCode**
+
+Delete a shortened URL.
+
+**Response (204):**
+
+Successfully deleted (no content)
+
+**Errors:**
+
+* `400` – Invalid short code
+* `401` – Unauthorized
+* `404` – Short URL not found
+* `500` – Internal server error
+
+---
+
+## 🏗️ Architecture Highlights
+
+### **Service Layer**
+
+All business logic is encapsulated in dedicated services:
+
+* **AuthService** - User authentication, token management
+* **UrlService** - URL management, validation, and statistics
+
+### **DTOs (Data Transfer Objects)**
+
+Strict input/output contracts with validation:
+
+* **RegisterDto** - User registration validation
+* **LoginDto** - User login validation
+* **CreateUrlDto** - URL creation validation
+* **UpdateUrlDto** - URL update validation
+* **UrlResponseDto** - Standardized URL response
+* **AuthResponseDto** - Standardized auth response
+
+### **Guards & Strategies**
+
+JWT-based authentication:
+
+* **JwtStrategy** - Validates JWT tokens
+* **JwtAuthGuard** - Protects routes requiring authentication
+
+### **Modules**
+
+Organized feature modules:
+
+* **AuthModule** - Authentication feature
+* **UrlModule** - URL shortening feature
+* **PrismaModule** - Database integration
+
+### **Error Handling**
+
+Consistent error responses with proper HTTP status codes
+
+---
+
+## 🚀 Deployment
+
+### Production Build
+
+```bash
+npm run build
+npm run start:prod
+```
+
+### Docker
+
+Create a `Dockerfile`:
+
+```dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install --only=production
+
+COPY dist ./dist
+COPY prisma ./prisma
+
+EXPOSE 3000
+
+CMD ["node", "dist/main.js"]
+```
+
+Build and run:
+
+```bash
+docker build -t url-shortener .
+docker run -p 3000:3000 --env-file .env url-shortener
+```
+
+---
+
+## 📝 License
+
+ISC
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 📧 Support
+
+For issues or questions, please open a GitHub issue or contact the development team.
   "refreshToken": "your-refresh-token"
 }
 ```
