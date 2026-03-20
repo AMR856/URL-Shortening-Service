@@ -64,6 +64,12 @@ describe('UrlService', () => {
   });
 
   describe('getUrl', () => {
+    it('should throw BadRequestException for missing short code', async () => {
+      await expect(service.getUrl('' as unknown as string)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
     it('should get URL and increment clicks', async () => {
       prismaMock.urls.findUnique.mockResolvedValue({
         id: 1,
@@ -97,7 +103,79 @@ describe('UrlService', () => {
     });
   });
 
+  describe('updateUrl', () => {
+    it('should update an existing URL', async () => {
+      prismaMock.urls.findUnique.mockResolvedValue({
+        id: 1,
+        shortCode: 'abc123',
+        url: 'https://old.example.com',
+      });
+
+      const updatedAt = new Date();
+      prismaMock.urls.update.mockResolvedValue({
+        id: 1,
+        shortCode: 'abc123',
+        url: 'https://new.example.com',
+        clicks: 2,
+        updatedAt,
+      });
+
+      const result = await service.updateUrl('abc123', {
+        url: 'https://new.example.com',
+      });
+
+      expect(result).toEqual({
+        id: 1,
+        shortCode: 'abc123',
+        url: 'https://new.example.com',
+        clicks: 2,
+        updatedAt,
+      });
+      expect(prismaMock.urls.update).toHaveBeenCalledWith({
+        where: { shortCode: 'abc123' },
+        data: {
+          url: 'https://new.example.com',
+          updatedAt: expect.any(Date),
+        },
+      });
+    });
+
+    it('should throw BadRequestException for missing new URL', async () => {
+      await expect(
+        service.updateUrl('abc123', { url: '' as unknown as string }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw BadRequestException for invalid new URL format', async () => {
+      await expect(
+        service.updateUrl('abc123', { url: 'invalid-url' }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw BadRequestException for missing short code', async () => {
+      await expect(
+        service.updateUrl('' as unknown as string, {
+          url: 'https://new.example.com',
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw NotFoundException when URL to update is missing', async () => {
+      prismaMock.urls.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.updateUrl('unknown', { url: 'https://new.example.com' }),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
   describe('deleteUrl', () => {
+    it('should throw BadRequestException for missing short code', async () => {
+      await expect(service.deleteUrl('' as unknown as string)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
     it('should delete a URL', async () => {
       prismaMock.urls.findUnique.mockResolvedValue({
         id: 1,
@@ -118,6 +196,49 @@ describe('UrlService', () => {
       prismaMock.urls.findUnique.mockResolvedValue(null);
 
       await expect(service.deleteUrl('nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('getStats', () => {
+    it('should return URL stats', async () => {
+      const createdAt = new Date('2026-01-01T00:00:00.000Z');
+      const updatedAt = new Date('2026-01-02T00:00:00.000Z');
+
+      prismaMock.urls.findUnique.mockResolvedValue({
+        id: 1,
+        url: 'https://example.com',
+        shortCode: 'abc123',
+        clicks: 7,
+        createdAt,
+        updatedAt,
+        expiresAt: null,
+      });
+
+      const result = await service.getStats('abc123');
+
+      expect(result).toEqual({
+        id: 1,
+        url: 'https://example.com',
+        shortCode: 'abc123',
+        clicks: 7,
+        createdAt,
+        updatedAt,
+        expiresAt: null,
+      });
+    });
+
+    it('should throw BadRequestException for missing short code', async () => {
+      await expect(service.getStats('' as unknown as string)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw NotFoundException when stats are missing', async () => {
+      prismaMock.urls.findUnique.mockResolvedValue(null);
+
+      await expect(service.getStats('unknown')).rejects.toThrow(
         NotFoundException,
       );
     });
