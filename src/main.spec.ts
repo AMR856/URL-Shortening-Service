@@ -4,6 +4,7 @@ const createDocumentMock = jest.fn();
 const setupMock = jest.fn();
 const createAppMock = jest.fn();
 
+const enableCorsMock = jest.fn();
 const useGlobalPipesMock = jest.fn();
 const listenMock = jest.fn().mockImplementation(async (_port, callback) => {
   if (callback) {
@@ -59,6 +60,7 @@ describe("main bootstrap", () => {
     jest.clearAllMocks();
 
     createAppMock.mockResolvedValue({
+      enableCors: enableCorsMock,
       useGlobalPipes: useGlobalPipesMock,
       listen: listenMock,
     });
