@@ -9,7 +9,7 @@ import * as bcrypt from "bcrypt";
 import { RegisterDto } from "../dto/register.dto";
 import { LoginDto } from "../dto/login.dto";
 import { PrismaService } from "../../../prisma/prisma.service";
-import { jwtConfig, jwtRefreshConfig } from "../../../config/jwt.config";
+import { jwtRefreshConfig } from "../../../config/jwt.config";
 
 @Injectable()
 export class AuthService {

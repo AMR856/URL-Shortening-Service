@@ -5,7 +5,7 @@ import { AuthController } from "./controllers/auth.controller";
 import { AuthService } from "./services/auth.service";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { PrismaModule } from "../../prisma/prisma.module";
-import { jwtConfig, jwtRefreshConfig } from "../../config/jwt.config";
+import { jwtConfig } from "../../config/jwt.config";
 
 @Module({
   imports: [
